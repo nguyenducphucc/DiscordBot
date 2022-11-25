@@ -1,6 +1,6 @@
-const fs = require("fs");
 const ytdl = require("ytdl-core");
 const ytSearch = require("yt-search");
+
 const {
   joinVoiceChannel,
   createAudioPlayer,
@@ -8,6 +8,7 @@ const {
   createAudioResource,
   StreamType,
 } = require("@discordjs/voice");
+
 const discordTTS = require("discord-tts");
 
 let queue = [];
@@ -34,9 +35,10 @@ const startPlaying = async (message, player) => {
 
   const { url, title, text } = queue.shift();
   if (text === undefined) {
-    const stream = await ytdl(url, {
+    const stream = ytdl(url, {
       filter: "audioonly",
-      // quality: "lowestaudio",
+      quality: "highestaudio",
+      highWaterMark: 1,
     });
 
     const resource = createAudioResource(stream);

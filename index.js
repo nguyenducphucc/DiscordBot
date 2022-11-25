@@ -65,13 +65,17 @@ client.on("voiceStateUpdate", (oldState, newState) => {
     if (oldState.member.user.bot) return;
 
     musicBot
-      .play({}, [`${oldState.member.user.username} leaving the server`], {
-        type: 2,
-      })
+      .play(
+        {},
+        [`${oldState.member.user.username}, rage quitting the server`],
+        {
+          type: 2,
+        }
+      )
       .catch("error in index voiceStateUpdate leaving");
   } else if (oldState.channelId === null) {
     musicBot
-      .play({}, [`${oldState.member.user.username} joining the server`], {
+      .play({}, [`${oldState.member.user.username}, joining the server`], {
         type: 2,
       })
       .catch("error in index voiceStateUpdate joining");
