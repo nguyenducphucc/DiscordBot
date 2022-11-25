@@ -1,5 +1,4 @@
-const fs = require("fs");
-const { Client, REST, GatewayIntentBits, Collection } = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 require("dotenv/config");
 const musicBot = require("./commands/play");
 
@@ -15,10 +14,6 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,
   ],
 });
-
-const rest = new REST({ version: "10" }).setToken(TOKEN);
-
-var queue = [];
 
 client.on("ready", () => {
   console.log("The bot is ready");
@@ -66,9 +61,6 @@ client.on("messageCreate", (message) => {
 });
 
 client.on("voiceStateUpdate", (oldState, newState) => {
-  // console.log(oldState.member.user.username, newState.member.user.username);
-  // if (oldState.member.user.bot) return;
-
   if (newState.channelId === null) {
     if (oldState.member.user.bot) return;
 
