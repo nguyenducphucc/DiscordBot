@@ -10,6 +10,7 @@ const {
 } = require("@discordjs/voice");
 
 const discordTTS = require("discord-tts");
+const play = require("play-dl");
 
 let queue = [];
 let isWaiting = false;
@@ -35,13 +36,17 @@ const startPlaying = async (message, player) => {
 
   const { url, title, text } = queue.shift();
   if (text === undefined) {
-    const stream = ytdl(url, {
-      filter: "audioonly",
-      quality: "highestaudio",
-      highWaterMark: 1,
-    });
+    // const stream = ytdl(url, {
+    //   filter: "audioonly",
+    //   quality: "highestaudio",
+    //   highWaterMark: 1,
+    // });
 
-    const resource = createAudioResource(stream);
+    const stream = await play.stream(url, { quality: 2 });
+
+    const resource = createAudioResource(stream.stream, {
+      inputType: stream.type,
+    });
     player.play(resource);
 
     if (title) message.reply(`Now Playing --- ${title}`);
