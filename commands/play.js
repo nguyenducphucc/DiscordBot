@@ -25,7 +25,6 @@ let player;
 const videoFinder = async (query) => {
   query = query.split("&")[0];
   const videoResult = await ytSearch.search(query);
-  console.log(videoResult);
   return videoResult.length ? videoResult[0] : null;
 };
 
