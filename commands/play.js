@@ -23,8 +23,10 @@ let connection;
 let player;
 
 const videoFinder = async (query) => {
+  query = query.split("&")[0];
   const videoResult = await ytSearch.search(query);
-  return videoResult.length > 1 ? videoResult[0] : null;
+  console.log(videoResult);
+  return videoResult.length ? videoResult[0] : null;
 };
 
 const startPlaying = async (message, player) => {
