@@ -1,5 +1,4 @@
 const ytdl = require("ytdl-core");
-// const ytSearch = require("yt-search");
 const ytSearch = require("youtube-search-without-api-key");
 
 const {
@@ -25,7 +24,6 @@ let player;
 
 const videoFinder = async (query) => {
   const videoResult = await ytSearch.search(query);
-  console.log(videoResult);
   return videoResult.length > 1 ? videoResult[0] : null;
 };
 
@@ -38,12 +36,6 @@ const startPlaying = async (message, player) => {
 
   const { url, title, text } = queue.shift();
   if (text === undefined) {
-    // const stream = ytdl(url, {
-    //   filter: "audioonly",
-    //   quality: "highestaudio",
-    //   highWaterMark: 1,
-    // });
-
     const stream = await play.stream(url, { quality: 2 });
 
     const resource = createAudioResource(stream.stream, {
