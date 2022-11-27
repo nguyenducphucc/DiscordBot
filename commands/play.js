@@ -1,4 +1,3 @@
-const ytdl = require("ytdl-core");
 const ytSearch = require("youtube-search-without-api-key");
 
 const {
