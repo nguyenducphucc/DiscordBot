@@ -32,19 +32,18 @@ const videoFinder = async (query) => {
 
 const startPlaying = async (message, player) => {
   if (isLoop) {
-    const stream = await play.stream(url, { quality: 2 });
+    const stream = await play.stream(songPlaying.url, { quality: 2 });
     const resource = createAudioResource(stream.stream, {
       inputType: stream.type,
     });
-    player.play(resource);
 
-    songPlaying = { url, title };
+    player.play(resource);
     isPlaying = true;
     return;
   }
 
   if (!queue.length) {
-    console.log("here");
+    console.log("here123");
     player.stop();
     return;
   }
