@@ -31,12 +31,6 @@ const videoFinder = async (query) => {
 };
 
 const startPlaying = async (message, player) => {
-  if (!queue.length) {
-    console.log("here");
-    player.stop();
-    return;
-  }
-
   if (isLoop) {
     const stream = await play.stream(url, { quality: 2 });
     const resource = createAudioResource(stream.stream, {
@@ -46,6 +40,12 @@ const startPlaying = async (message, player) => {
 
     songPlaying = { url, title };
     isPlaying = true;
+    return;
+  }
+
+  if (!queue.length) {
+    console.log("here");
+    player.stop();
     return;
   }
 
