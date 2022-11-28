@@ -12,6 +12,9 @@ const discordTTS = require("discord-tts");
 const play = require("play-dl");
 
 let queue = [];
+let songPlaying = { url: null, title: null };
+
+let isLoop = false;
 let isWaiting = false;
 let isPlaying = false;
 let isTalking = false;
@@ -34,23 +37,35 @@ const startPlaying = async (message, player) => {
     return;
   }
 
-  const { url, title, text } = queue.shift();
-  if (text === undefined) {
+  if (isLoop) {
     const stream = await play.stream(url, { quality: 2 });
-
     const resource = createAudioResource(stream.stream, {
       inputType: stream.type,
     });
     player.play(resource);
 
-    if (title) message.reply(`Now Playing --- ${title}`);
+    songPlaying = { url, title };
+    isPlaying = true;
+    return;
+  }
+
+  const { url, title, text } = queue.shift();
+  if (text === undefined) {
+    const stream = await play.stream(url, { quality: 2 });
+    const resource = createAudioResource(stream.stream, {
+      inputType: stream.type,
+    });
+    player.play(resource);
+
+    if (title) message.channel.send(`Now Playing --- ${title}`);
+    songPlaying = { url, title };
     isPlaying = true;
   } else {
     const audioFile = discordTTS.getVoiceStream(text);
     const resource = createAudioResource(audioFile, {
       inputType: StreamType.Arbitrary,
-      inlineVolume: true,
     });
+
     player.play(resource);
     isTalking = true;
   }
@@ -59,15 +74,17 @@ const startPlaying = async (message, player) => {
 let waitingPromise = () => {
   return new Promise((resolve, reject) => {
     isWaiting = true;
-    let waitingTime = 10800;
+    let waitingTime = 21600;
 
     let myInterval = setInterval(() => {
       console.log(`counting... ${waitingTime}`);
 
       if (!waitingTime) {
         console.log("rejecting...");
+        songPlaying = { url: null, title: null };
         isPlaying = false;
         isTalking = false;
+        isLoop = false;
         isWaiting = false;
         isPause = false;
         clearInterval(myInterval);
@@ -80,9 +97,10 @@ let waitingPromise = () => {
         reject("force");
       }
 
-      if (queue.length) {
+      if (isLoop || queue.length) {
         console.log("resolving...");
         isWaiting = false;
+        if (!isLoop) songPlaying = { url: null, title: null };
         clearInterval(myInterval);
         resolve();
       }
@@ -137,6 +155,8 @@ module.exports = {
                 );
 
               connection.disconnect();
+              songPlaying = { url: null, title: null };
+              isLoop = false;
               isPlaying = false;
               isTalking = false;
               isPause = false;
@@ -151,6 +171,8 @@ module.exports = {
 
     player.on("error", (error) => {
       console.log(error);
+      songPlaying = { url: null, title: null };
+      isLoop = false;
       isPlaying = false;
       isTalking = false;
       console.error(`Error: ${error.message} with resource`);
@@ -313,6 +335,58 @@ module.exports = {
     player.unpause();
   },
 
+  loop(message) {
+    const voiceChannel = message.member.voice.channel;
+    if (!voiceChannel)
+      return message.channel.send(
+        "You need to be in a voice channel to execute this command!"
+      );
+
+    if (!isJoin) {
+      return message.reply(
+        "Hey!! Don't count me out --- I think you should do the command !join so I can sneak in there hehe"
+      );
+    }
+
+    if (!isPlaying) {
+      return message.reply(
+        "Looping unknown name song... for unknown reason... T_T"
+      );
+    }
+
+    if (isLoop) {
+      return message.reply(
+        "You know loop inside a loop creating a new dimension of mystery, and I can't handle it sadge..."
+      );
+    }
+
+    message.reply(`Looping ${songPlaying.title}`);
+    isLoop = true;
+  },
+
+  unloop(message) {
+    const voiceChannel = message.member.voice.channel;
+    if (!voiceChannel)
+      return message.channel.send(
+        "You need to be in a voice channel to execute this command!"
+      );
+
+    if (!isJoin) {
+      return message.reply(
+        "Hey!! Don't count me out --- I think you should do the command !join so I can sneak in there hehe"
+      );
+    }
+
+    if (!isLoop) {
+      return message.reply(
+        "Unloop unloop thing. Have you ever think it is already be like that?"
+      );
+    }
+
+    message.reply("Unlooping... Now next song can be played!");
+    isLoop = false;
+  },
+
   detele(message) {
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel)
@@ -328,7 +402,9 @@ module.exports = {
 
     console.log("destroying...");
     queue = [];
+    songPlaying = { url: null, title: null };
     isJoin = false;
+    isLoop = false;
     isWaiting = false;
     isPlaying = false;
     isTalking = false;

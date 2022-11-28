@@ -53,6 +53,10 @@ client.on("messageCreate", (message) => {
     musicBot.pause(message);
   } else if (command === "resume" || command === "unpause") {
     musicBot.resume(message);
+  } else if (command === "loop") {
+    musicBot.loop();
+  } else if (command === "unloop") {
+    musicBot.unloop();
   } else {
     message.reply(
       "Shhh!!! Type !help for all my secret services --- Obviously confidential"
